@@ -10,19 +10,29 @@ object TimeController extends Controller with TimeHelpers {
   // TODO: Return an HTTP 200 plain text response containing the time.
   //
   // Use the `localTime` and `timeToString` helper methods below.
-  def time = ???
+  def time = Action { request =>
+    Ok(timeToString(localTime))
+  }
 
   // TODO: Read in a time zone ID (a string) and return an HTTP 200
   // plain text response containing the localized time.
   //
   // Use the `localTimeInZone` and `timeToString` helper methods below.
-  def timeIn(zoneId: String) = ???
+  def timeIn(zoneId: String) = Action { request =>
+    Ok(localTimeInZone(zoneId).map(timeToString).getOrElse(s"unknown time zone $zoneId"))
+  }
+  def timeCountryCity(country: String, city: String) = Action { request =>
+    val location = s"$country/$city"
+    Ok(localTimeInZone(location).map(timeToString).getOrElse(s"unknown time zone $location"))
+  }
 
   // TODO: Return an HTTP 200 plain text response containing a list of
   // available time zone codes.
   //
   // Use the `zoneIds` helper method below.
-  def zones = ???
+  def zones = Action { request =>
+    Ok(zoneIds.mkString("\n"))
+  }
 }
 
 trait TimeHelpers {
