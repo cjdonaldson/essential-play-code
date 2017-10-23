@@ -3,7 +3,7 @@ package controllers
 import play.api._
 import play.api.mvc._
 
-object CsvController extends Controller with CsvHelpers {
+class CsvController extends Controller with CsvHelpers {
   // TODO: Write a controller that:
   //
   //  - converts uploads of type `application/x-url-form-url-encoded`
@@ -32,7 +32,27 @@ object CsvController extends Controller with CsvHelpers {
   //
   //  - Look at the helper functions in `CsvHelpers`.
   //    They will do a lot of the heavy lifting for you.
-  def toCsv = ???
+  def toCsv = Action { request =>
+    def textPlain(): Option[Result] = request.body.asText.map(s => Ok(tsvToCsv(s)))
+
+    def textTsv(): Option[Result] = request.body.asRaw.map(r => Ok(rawBufferToCsv(r)))
+
+    def textForm(): Option[Result] = request.body.asFormUrlEncoded.map(fd => Ok(formDataToCsv(fd)))
+
+    def unknown(): Option[Result] = for {
+      m <- Option(s"method: ${request.method}\n")
+      u <- Option(s"uri: ${request.uri}\n")
+      p <- Option(s"path: ${request.path}\n")
+      q <- Option(s"query: ${request.queryString}\n")
+      h <- Option(s"headrs:\n  ${request.headers.toMap.mkString("\n  ")}\n")
+      c <- Option(request.cookies.mkString("cookie: ", "\n", "\n"))
+      b <- Option(s"body: ${request.body}\n")
+      t <- Option(s"\n\nt: ${request.headers("Content-Type")}")
+    } yield Ok(m + u + p + q + h + c + b + t)
+
+    textPlain orElse textTsv orElse textForm orElse unknown getOrElse BadRequest("oops")
+  }
+
 }
 
 trait CsvHelpers {
@@ -52,9 +72,7 @@ trait CsvHelpers {
     headLine +: bodyLines mkString "\n"
   }
 
-  def tsvToCsv(str: String) =
-    str.replaceAll("\t", ",")
+  def tsvToCsv(str: String) = str.replaceAll("\t", ",")
 
-  def rawBufferToCsv(buff: RawBuffer): String =
-    tsvToCsv(buff.asBytes() map (new String(_)) getOrElse "")
+  def rawBufferToCsv(buff: RawBuffer): String = tsvToCsv(buff.asBytes() map (b => new String(b)) getOrElse "ooops")
 }
