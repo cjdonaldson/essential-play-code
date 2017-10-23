@@ -18,7 +18,14 @@ object AuthService {
   //        - If it isn't, return `PasswordIncorrect`
   //     - If it isn't, return `UserNotFound`
   def login(request: LoginRequest): LoginResponse = {
-    ???
+    passwords.get(request.username).fold(UserNotFound(request.username): LoginResponse){ pw =>
+      if(pw == request.password) {
+        val id: SessionId = java.util.UUID.randomUUID.toString
+        sessions += (id -> request.username)
+        LoginSuccess(id)
+      }
+      else PasswordIncorrect(request.username)
+    }
   }
 
   // TODO: Complete:
@@ -26,7 +33,7 @@ object AuthService {
   //     - If it is, delete it
   //     - If it isn't, do nothing
   def logout(sessionId: SessionId): Unit = {
-    ???
+    sessions -= sessionId
   }
 
   // TODO: Complete:
@@ -34,6 +41,8 @@ object AuthService {
   //     - If it is, return `Credentials`
   //     - If it isn't, return `SessionNotFound`
   def whoami(sessionId: SessionId): WhoamiResponse = {
-    ???
+    sessions.get(sessionId).fold(SessionNotFound(sessionId): WhoamiResponse){ u =>
+      Credentials(sessionId, u)
+    }
   }
 }
