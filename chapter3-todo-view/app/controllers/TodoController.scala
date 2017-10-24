@@ -12,7 +12,7 @@ object TodoController extends Controller with TodoDataHelpers {
 
   def renderTodoList(todoList: TodoList): Html =
     // TODO: Call your template to render the todo list.
-    ???
+    views.html.pageLayout("My ToDo's")(views.html.todoList(todoList))
 }
 
 trait TodoDataHelpers {

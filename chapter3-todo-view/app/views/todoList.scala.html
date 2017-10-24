@@ -1,0 +1,12 @@
+@(todoList: TodoList)
+
+<ul class="todo-list">
+  @for(todo <- todoList.items) {
+    <li @if(todo.id.isDefined){ id="@todo.id.get" } class="todo-item">
+      <label>
+        <input type="checkbox" @if(todo.complete) { checked }>
+        @todo.label
+      </label>
+    </li>
+  }
+</ul>
