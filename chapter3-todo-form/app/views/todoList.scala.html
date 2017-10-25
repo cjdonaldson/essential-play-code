@@ -1,4 +1,4 @@
-@(todoList: TodoList)
+@(todoList: TodoList, form: Form[models.Todo])
 
 @import models._
 
@@ -7,7 +7,7 @@
 
   <ul class="todo-list">
   @for(item <- todoList.items) {
-    <li class="todo-item">
+    <li @if(item.id.isDefined){ id="@item.id.get" } class="todo-item">
       <label>
         <input type="checkbox" @if(item.complete) { checked }>
         @item.label
@@ -19,5 +19,5 @@
   <h2>Add a new todo</h2>
 
    <!-- TODO: Add "create todo" form to template -->
-   <p>TODO: Add "create todo" form to template</p>
+   @todoForm(form)
 }
