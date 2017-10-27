@@ -11,15 +11,20 @@ object AuthController extends Controller with ControllerHelpers {
 
   // TODO: Complete:
   //  - Create a form for a LoginRequest
-  val loginForm: Form[LoginRequest] = ???
+  val loginForm: Form[LoginRequest] = Form(mapping(
+    "username" -> nonEmptyText,
+    "password" -> nonEmptyText
+  )(LoginRequest.apply)(LoginRequest.unapply))
 
   // TODO: Complete:
   //  - Create a login page template:
   //     - Accepts a login form as a parameter
   //     - Displays the form and a submit button
   def login = Action { implicit request =>
-    ???
+    Ok(renderLogin(loginForm))
   }
+  private def renderLogin(form: Form[LoginRequest]) =
+    views.html.pageLayoutLogin("Log In")(views.html.loginForm(form))
 
   // TODO: Complete:
   //  - Process a submitted login form:
@@ -34,7 +39,24 @@ object AuthController extends Controller with ControllerHelpers {
   //
   //     loginForm.withError("username", "User not found") // returns a new login form
   def submitLogin = Action { implicit request =>
-    ???
+    loginForm.bindFromRequest().fold(
+        hasErrors = { errorForm =>
+        BadRequest(renderLogin(errorForm.withError("username", "failed bindFromRequest")))
+      },
+      success = { loginRequest =>
+        AuthService.login(loginRequest) match {
+          case s: LoginSuccess => loginRedirect(s)
+          case PasswordIncorrect(user) =>
+            val errorForm = loginForm.fill(LoginRequest(user, ""))
+              .withError("password", s"incorrect password for user $user. (test looks for >>) User not found or password incorrect")
+            BadRequest(renderLogin(errorForm))
+          case UserNotFound(user) =>
+            val errorForm = loginForm.fill(LoginRequest(user, ""))
+              .withError("username", s"User $user not found. (test looks for >>) User not found or password incorrect")
+            BadRequest(renderLogin(errorForm))
+        }
+      }
+    )
   }
 
   def loginRedirect(res: LoginSuccess): Result =

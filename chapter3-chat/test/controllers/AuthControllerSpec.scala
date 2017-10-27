@@ -7,7 +7,7 @@ import play.api.test._
 class AuthControllerSpec extends PlaySpec with ControllerSpecHelpers {
   "login page" must {
     "contain a login form" in {
-      pending // TODO: Enable this test when you're ready
+      //pending // TODO: Enable this test when you're ready
 
       val response = await(wsCall(routes.AuthController.login).get())
 
@@ -16,7 +16,7 @@ class AuthControllerSpec extends PlaySpec with ControllerSpecHelpers {
     }
 
     "accept a valid login form" in {
-      pending // TODO: Enable this test when you're ready
+      //pending // TODO: Enable this test when you're ready
 
       val response = await(wsCall(routes.AuthController.submitLogin).post(Map(
         "username" -> Seq("alice"),
@@ -30,7 +30,7 @@ class AuthControllerSpec extends PlaySpec with ControllerSpecHelpers {
     }
 
     "reject a missing user" in {
-      pending // TODO: Enable this test when you're ready
+      //pending // TODO: Enable this test when you're ready
 
       val response = await(wsCall(routes.AuthController.submitLogin).post(Map(
         "username" -> Seq("anne"),
@@ -42,7 +42,7 @@ class AuthControllerSpec extends PlaySpec with ControllerSpecHelpers {
     }
 
     "reject a bad password user" in {
-      pending // TODO: Enable this test when you're ready
+      //pending // TODO: Enable this test when you're ready
 
       val response = await(wsCall(routes.AuthController.submitLogin).post(Map(
         "username" -> Seq("alice"),

@@ -1,0 +1,24 @@
+@(messages: List[services.ChatServiceMessages.Message], form: Form[controllers.ChatController.ChatRequest])
+
+<table>
+  <tr><th>user</th><th>Message</th></tr>
+@for( msg <- messages) {
+  <tr>
+    <td >@msg.author</td>
+    <td >@msg.text</td>
+  </tr>
+}
+</table>
+
+@helper.form(action = routes.ChatController.submitMessage, 'class -> "chat-form") {
+
+  @helper.inputText(
+    form("text"),
+    '_class -> "text-label",
+    '_label -> "",
+    '_help  -> "",
+    'placeholder -> ""
+  )
+
+  <button type="submit">Create</button>
+}
