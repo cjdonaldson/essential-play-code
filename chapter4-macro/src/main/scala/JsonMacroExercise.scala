@@ -11,4 +11,5 @@ object JsonMacroExercise {
 
   // TODO: Complete:
   //  - Define a JSON format for `Message` using the Json.format macro
+  implicit val messageFormat = Json.format[Message]
 }
