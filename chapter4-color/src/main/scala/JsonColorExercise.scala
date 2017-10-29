@@ -15,4 +15,10 @@ object JsonColorExercise {
   //     - Serialize a Color to an object with "red", "green", "blue", and "alpha" fields
   //
   // Hint: Use the `createColor` and `expandColor` methods above to help
+  implicit val colorFormat: Format[Color] = (
+    (JsPath \ "red").format[Int] and
+    (JsPath \ "green").format[Int] and
+    (JsPath \ "blue").format[Int] and
+    (JsPath \ "alpha").format[Int]
+  )(createColor, expandColor)
 }
