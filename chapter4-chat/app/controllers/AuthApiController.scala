@@ -17,7 +17,13 @@ object AuthApiController extends Controller with ControllerHelpers {
   //     - If the user was not found, return a BadRequest result containing the response
   //     - If the password was incorrect, return a PasswordIncorrect result containing the response
   def login = Action { implicit request =>
-    ???
+    request.withRequestJsonAs[LoginRequest] { loginRequest =>
+      AuthService.login(loginRequest) match {
+        case l @ LoginSuccess(id) => Ok(Json.toJson(l)).withHeaders("ChatAuth" -> id)
+        case p: PasswordIncorrect => BadRequest(Json.toJson(p))
+        case u: UserNotFound => BadRequest(Json.toJson(u))
+      }
+    }
   }
 
   // TODO: Complete:
@@ -27,6 +33,6 @@ object AuthApiController extends Controller with ControllerHelpers {
   //     - If the session was found, return an Ok response
   //     - If the session was not found, return a NotFound response
   def whoami = Action { implicit request =>
-    ???
+    request.withJsonAuthentication { credentials => Ok(Json.toJson(credentials)) }
   }
 }

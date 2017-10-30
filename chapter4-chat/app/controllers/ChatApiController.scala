@@ -17,7 +17,9 @@ object ChatApiController extends Controller with ControllerHelpers {
   //     - If the session was found, return an Ok response containing the messages
   //     - If the session was not found, return an Unauthorized response
   def messages = Action { implicit request =>
-    ???
+    request.withJsonAuthentication { credentials =>
+      Ok(Json.toJson(MessagesSuccess(ChatService.messages)))
+    }
   }
 
   // TODO: Complete:
@@ -29,6 +31,10 @@ object ChatApiController extends Controller with ControllerHelpers {
   //           - If it was invalud, return a BadRequest response
   //     - If the session was not found, return an Unauthorized response
   def chat = Action { implicit request =>
-    ???
+    request.withJsonAuthentication { credentials =>
+      request.withRequestJsonAs[ChatRequest] { message =>
+        Ok(Json.toJson(ChatService.chat(credentials.username, message.text)))
+      }
+    }
   }
 }
