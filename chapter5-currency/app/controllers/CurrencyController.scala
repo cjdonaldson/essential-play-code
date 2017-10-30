@@ -12,7 +12,10 @@ object CurrencyController extends Controller with ExchangeRateHelpers {
       //  - Convert fromAmount to USD using ExchangeRateHelpers.toUSD
       //  - Convert the USD amount to toCurrency using ExchangeRateHelpers.fromUSD
       //  - Format the result using formatConversion
-      ???
+      for {
+        usd <- toUSD(fromAmount, fromCurrency)
+        to <- fromUSD(usd, toCurrency)
+      } yield Ok(formatConversion(fromAmount, fromCurrency, to, toCurrency))
     }
 
   def convertAll(fromAmount: Double, fromCurrency: Currency) =
@@ -23,7 +26,18 @@ object CurrencyController extends Controller with ExchangeRateHelpers {
       //     - Convert the USD amount to toCurrency using ExchangeRateHelpers.fromUSD
       //     - Format the result using formatConversion
       //  - Combine all results into a single plain text response
-      ???
+      import scala.concurrent.Await
+      import scala.concurrent.duration._
+      import scala.language.postfixOps
+      toUSD(fromAmount, fromCurrency) map { usd =>
+        val all = currencies map { c =>
+          fromUSD(usd, c) map { other =>
+            formatConversion(fromAmount, fromCurrency, other, c)
+          }
+        }
+        val s = Future.sequence(all) map (res => Ok(res.mkString("\n")))
+        Await.result(s, 10 seconds)
+      }
     }
 }
 
