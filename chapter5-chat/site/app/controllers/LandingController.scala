@@ -13,7 +13,7 @@ import scala.concurrent.{ Future, ExecutionContext }
 object LandingController extends Controller with SiteControllerHelpers {
   def index = Action { request =>
     request.sessionCookieId match {
-      case Some(sessionId) => Redirect(routes.ChatController.index)
+      case Some(sessionId) => Redirect(routes.ChatController.index(sessionId))
       case None            => Redirect(routes.AuthController.login)
     }
   }

@@ -6,11 +6,11 @@ import scala.concurrent.{ Future, ExecutionContext }
 trait SiteControllerHelpers extends ControllerHelpers {
   implicit class RequestCookieOps(request: Request[AnyContent]) {
     def sessionCookieId: Option[String] =
-      request.cookies.get("ChatAuth").map(_.value)
+      request.headers.get("ChatAuth")
   }
 
   implicit class ResultCookieOps(result: Result) {
-    def withSessionCookie(sessionId: String) =
-      result.withCookies(Cookie("ChatAuth", sessionId))
+    def withSessionsAuth(sessionId: String) =
+      result.withHeaders("ChatAuth" -> sessionId)
   }
 }

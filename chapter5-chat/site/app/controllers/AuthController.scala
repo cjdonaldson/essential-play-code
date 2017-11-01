@@ -33,7 +33,7 @@ object AuthController extends Controller with SiteControllerHelpers {
         for {
           loginRes <- authClient.login(loginReq)
         } yield loginRes match {
-          case res: LoginSuccess      => Redirect(routes.ChatController.index).withSessionCookie(res.sessionId)
+          case res: LoginSuccess      => Redirect(routes.ChatController.index(res.sessionId))
           case res: UserNotFound      => BadRequest(views.html.login(loginForm.withError("username", "User not found or password incorrect")))
           case res: PasswordIncorrect => BadRequest(views.html.login(loginForm.withError("username", "User not found or password incorrect")))
         }

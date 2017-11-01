@@ -20,42 +20,33 @@ object ChatController extends Controller with SiteControllerHelpers {
     "text" -> nonEmptyText
   )(ChatRequest.apply)(ChatRequest.unapply))
 
-  def index = Action.async { implicit request =>
-    withSessionCookieId(request) { sessionId =>
-      chatRoom(sessionId)
-    }
+  def index(sessionId: String) = Action.async { implicit request =>
+    chatRoom(sessionId)
   }
 
-  def submitMessage = Action.async { implicit request =>
-    withSessionCookieId(request) { sessionId =>
-      chatForm.bindFromRequest().fold(
-        hasErrors = { form: Form[ChatRequest] =>
-          chatRoom(sessionId, form)
-        },
-        success = { chatReq: ChatRequest =>
-          chatClient.chat(sessionId, chatReq) map {
-            case res: ChatSuccess      => redirectToIndex
-            case res: ChatUnauthorized => redirectToLogin
-          }
+  def submitMessage(sessionId: String) = Action.async { implicit request =>
+    chatForm.bindFromRequest().fold(
+      hasErrors = { form: Form[ChatRequest] =>
+        chatRoom(sessionId, form)
+      },
+      success = { chatReq: ChatRequest =>
+        chatClient.chat(sessionId, chatReq) map {
+          case res: ChatSuccess      => redirectToIndex(sessionId)
+          case res: ChatUnauthorized => redirectToLogin
         }
-      )
-    }
+      }
+    )
   }
 
   private def chatRoom(sessionId: String, form: Form[ChatRequest] = chatForm): Future[Result] =
-    chatClient.messages(sessionId) map {
-      case res: MessagesSuccess      => Ok(views.html.chatroom(res.messages, form))
-      case res: MessagesUnauthorized => redirectToLogin
+    chatClient.messages(sessionId) flatMap {
+      case res: MessagesSuccess      =>
+        Future.successful { Ok(views.html.chatroom(sessionId, res.messages, form)).withSessionsAuth(sessionId) }
+      case res: MessagesUnauthorized => Future.successful(redirectToLogin)
     }
 
-  private def withSessionCookieId(request: Request[AnyContent])(func: String => Future[Result]): Future[Result] =
-    request.sessionCookieId match {
-      case Some(sessionId) => func(sessionId)
-      case None            => Future.successful(redirectToLogin)
-    }
-
-  private val redirectToIndex: Result =
-    Redirect(routes.ChatController.index)
+  private def redirectToIndex(sessionId: String): Result =
+    Redirect(routes.ChatController.index(sessionId))
 
   private val redirectToLogin: Result =
     Redirect(routes.AuthController.login)

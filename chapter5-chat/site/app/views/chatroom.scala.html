@@ -1,6 +1,6 @@
-@(messages: Seq[services.ChatServiceMessages.Message], chatForm: Form[services.ChatServiceMessages.ChatRequest])
+@(sessionId: String, messages: Seq[services.ChatServiceMessages.Message], chatForm: Form[services.ChatServiceMessages.ChatRequest])
 
-@layout("chatroom") {
+@layout("chatroom", sessionId) {
   <h1>Chat</h1>
 
   <ul class="list-messages list-unstyled">
@@ -12,7 +12,7 @@
     }
   </ul>
 
-  @helper.form(action = routes.ChatController.submitMessage) {
+  @helper.form(action = routes.ChatController.submitMessage(sessionId)) {
     @helper.inputText(chatForm("text"), '_label -> "Write a message...", 'class -> "form-control")
     <button class="btn btn-primary" type="submit">OK</button>
   }

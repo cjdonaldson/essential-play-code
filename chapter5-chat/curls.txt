@@ -1,0 +1,22 @@
+curl 'http://localhost:9002/login' --header 'Content-Type: application/json' --data '{"username":"alice","password":"password1"}'
+export CHAT_AUTH="Authorization: 8ab15db0-ddd5-4250-a72b-0be94f0cfc8d "
+export CHAT_AUTH="8ab15db0-ddd5-4250-a72b-0be94f0cfc8d "
+
+curl "http://localhost:9002/whoami/$CHAT_AUTH" --header 'Content-Type: application/json'
+curl "http://localhost:9002/logout/$CHAT_AUTH" -X POST
+
+curl 'http://localhost:9001/message' --header 'Content-Type: application/json' --header "ChatAuth: $CHAT_AUTH"
+curl 'http://localhost:9001/message' --header 'Content-Type: application/json' --header "ChatAuth: $CHAT_AUTH" --data '{"text":"line 1"}'
+
+
+
+
+=======  Site
+curl 'http://localhost:9000/login' --header 'Content-Type: application/json' --data '{"username":"alice","password":"password1"}' -v
+export CHAT_AUTH="Authorization: 8ab15db0-ddd5-4250-a72b-0be94f0cfc8d "
+
+curl 'http://localhost:9000/chat' --header 'Content-Type: application/json' --header $CHAT_AUTH -v
+curl 'http://localhost:9000/chat' --header 'Content-Type: application/json' --header $CHAT_AUTH --data '{"text":"line 1"}' -v
+
+
+

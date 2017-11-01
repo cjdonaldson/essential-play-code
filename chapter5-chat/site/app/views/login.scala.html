@@ -1,6 +1,6 @@
 @(loginForm: Form[services.AuthServiceMessages.LoginRequest])
 
-@layout("login") {
+@layout("login", "placeHolderId") {
   <h1>Log In</h1>
 
   @helper.form(action = routes.AuthController.submitLogin) {

@@ -13,7 +13,7 @@ object AuthApiController extends Controller with ControllerHelpers {
     request.jsonAs[LoginRequest] match {
       case JsSuccess(req, _) =>
         AuthService.login(req) match {
-          case res: LoginSuccess      => Ok(Json.toJson(res))
+          case res: LoginSuccess      => Ok(Json.toJson(res)).withHeaders("ChatAuth" -> res.sessionId)
           case res: UserNotFound      => BadRequest(Json.toJson(res))
           case res: PasswordIncorrect => BadRequest(Json.toJson(res))
         }
@@ -23,13 +23,13 @@ object AuthApiController extends Controller with ControllerHelpers {
 
   def logout(sessionId: String) = Action { request =>
     AuthService.logout(sessionId)
-    Ok
-  }
+      Ok
+    }
 
   def whoami(sessionId: String) = Action { request =>
     AuthService.whoami(sessionId) match {
-      case res: Credentials     => Ok(Json.toJson(res))
-      case res: SessionNotFound => NotFound(Json.toJson(res))
+        case res: Credentials     => Ok(Json.toJson(res))
+        case res: SessionNotFound => NotFound(Json.toJson(res))
+      }
     }
-  }
 }

@@ -1,7 +1,7 @@
 GET  /             controllers.LandingController.index
 
-GET  /chat         controllers.ChatController.index
-POST /chat         controllers.ChatController.submitMessage
+GET  /chat/:sessionId         controllers.ChatController.index(sessionId: String)
+POST /chat/:sessionId         controllers.ChatController.submitMessage(sessionId: String)
 
 GET  /login        controllers.AuthController.login
 POST /login        controllers.AuthController.submitLogin
