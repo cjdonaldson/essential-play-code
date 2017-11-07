@@ -1,0 +1,17 @@
+export baseUrl="http://localhost:8080"
+export usersUrl="$baseUrl/users"
+export loginUrl="$baseUrl/login"
+export whoAmIUrl="$baseUrl/whoami"
+export logoutUrl="$baseUrl/logout"
+export contentType="Content-Type: application/json"
+curl --header "$contentType" "$usersUrl"
+curl --header "$contentType" "$usersUrl" -X POST --data '{"name":"chas", "password":"ooops", "age":13, "countryOfResidence":"usa"}'
+curl --header "$contentType" "$usersUrl/chuck"
+curl --header "$contentType" "$usersUrl/chas"
+curl --header "$contentType" "$usersUrl/chas" -X DELETE
+
+curl --header "$contentType" "$loginUrl"
+curl --header "$contentType" "$loginUrl" -X POST --data '{"user":"alice", "password":"password1"}'
+curl --header "$contentType" "$whoAmIUrl"
+curl --header "$contentType" "$logoutUrl"
+
